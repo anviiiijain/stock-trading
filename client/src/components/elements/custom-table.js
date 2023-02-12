@@ -13,8 +13,9 @@ const CustomTable = (props) => {
       <Table sx={{ minWidth: 650 }} aria-label='stock table'>
         <TableHead>
           <TableRow>
-            {columns?.map((heading) => (
+            {columns?.map((heading, idx) => (
               <TableCell
+                key={idx}
                 sx={{
                   fontWeight: 900,
                   fontSize: '1.1rem',
@@ -32,8 +33,10 @@ const CustomTable = (props) => {
               key={row?.name}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              {columns?.map((column) => (
-                <TableCell align='left'>{row[column.key]}</TableCell>
+              {columns?.map((column, idx) => (
+                <TableCell key={idx} align='left'>
+                  {row[column.key]}
+                </TableCell>
               ))}
             </TableRow>
           ))}

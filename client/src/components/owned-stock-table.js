@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { fetchOwnedStocks } from '../api/stock'
-import CustomTable from './elements/custom-table'
-import formatDate from '../utils/formatDate'
 import calcProfit from '../utils/calcProfit'
-import Socket from 'socket.io-client'
-import useStocks from '../hooks/useStocks'
-const socket = Socket('http://localhost:1337', {
-  transports: ['websocket', 'polling'],
-})
+import formatDate from '../utils/formatDate'
+import CustomTable from './elements/custom-table'
 
 let columns = [
   { key: 'name', label: 'Name' },
@@ -17,19 +11,19 @@ let columns = [
   { key: 'profit', label: 'Profit' },
 ]
 
-const OwnedStockTable = () => {
+const OwnedStockTable = ({ ownedStocks }) => {
   const [rowsData, setRowsData] = useState([])
-  const { ownedStocks } = useStocks()
 
   useEffect(() => {
     let _owned = ownedStocks.map((item) => {
       let { stock, ...restItem } = item
       return {
         ...restItem,
-        price: stock.price,
-        name: stock.name,
-        profit: `${calcProfit(item.boughtAtPrice, stock.price)}%`,
-        boughtOnDate: formatDate(item.boughtOnDate),
+        price: Math.floor(stock?.price * 100) / 100,
+        name: stock?.name,
+        boughtAtPrice: Math.floor(item?.boughtAtPrice * 100) / 100,
+        profit: `${calcProfit(item?.boughtAtPrice, stock?.price)}%`,
+        boughtOnDate: formatDate(item?.boughtOnDate),
       }
     })
     setRowsData(_owned)

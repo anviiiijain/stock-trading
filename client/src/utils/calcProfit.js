@@ -1,4 +1,4 @@
 const calcProfit = (initial, current) => {
-  return ((current - initial) / initial) * 100
+  return Math.floor((((current - initial) * 100) / initial) * 100) / 100
 }
 export default calcProfit

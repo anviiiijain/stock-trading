@@ -33,6 +33,25 @@ StockSchema.statics.randomize = function () {
   )
 }
 
+StockSchema.pre('deleteOne', function (next) {
+  const stockId = this.getQuery()['_id']
+  mongoose
+    .model('User')
+    .updateMany(
+      { ownedStocks: { $elemMatch: { stock: stockId } } },
+      { $pull: { ownedStocks: { $elemMatch: { stock: stockId } } } },
+      function (err, result) {
+        if (err) {
+          console.log(`[error] ${err}`)
+          next(err)
+        } else {
+          console.log('success')
+          next()
+        }
+      }
+    )
+})
+
 const StockModel = mongoose.model('Stock', StockSchema)
 
 export default StockModel

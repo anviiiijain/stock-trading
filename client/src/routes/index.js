@@ -11,8 +11,6 @@ import useFindUser from '../hooks/useFindUser'
 import Dashboard from '../pages/Dashboard'
 import LoginPage from '../pages/Login'
 import RegisterPage from '../pages/Register'
-import { StockContext } from '../hooks/StockContext'
-import useStocks from '../hooks/useStocks'
 
 const ProtectedRoute = () => {
   const { user, isLoading } = useContext(UserContext)
@@ -23,19 +21,17 @@ const ProtectedRoute = () => {
 
 const AppRoutes = () => {
   const { user, setUser, isLoading } = useFindUser()
-  const { stocks, ownedStocks } = useStocks()
+
   return (
     <BrowserRouter>
       <UserContext.Provider value={{ user, setUser, isLoading }}>
-        <StockContext.Provider value={{ stocks, ownedStocks }}>
-          <Routes>
-            <Route path='/login' element={<LoginPage />} />
-            <Route path='/register' element={<RegisterPage />} />
-            <Route path='/' element={<ProtectedRoute />}>
-              <Route path='/' element={<Dashboard />} />
-            </Route>
-          </Routes>
-        </StockContext.Provider>
+        <Routes>
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/register' element={<RegisterPage />} />
+          <Route path='/' element={<ProtectedRoute />}>
+            <Route path='/' element={<Dashboard />} />
+          </Route>
+        </Routes>
       </UserContext.Provider>
     </BrowserRouter>
   )

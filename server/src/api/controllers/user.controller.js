@@ -48,7 +48,6 @@ export const buyStock = async (req, res) => {
     if (!user) {
       return res.status(403).json({ message: 'error in fetching stocks' })
     }
-    console.log({ user })
     if (user.ownedStocks.find((item) => item.stock == id)) {
       return res.json({ message: 'stock already owned' })
     }

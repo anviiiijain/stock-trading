@@ -1,60 +1,54 @@
 import { useEffect, useState } from 'react'
 import { tailwindConfig } from '../utils/Utils'
 import LineChart from './charts/line-chart'
-import Socket from 'socket.io-client'
-import useStocks from '../hooks/useStocks'
-const socket = Socket('http://localhost:1337', {
-  transports: ['websocket', 'polling'],
-})
-const TopStocksChart = () => {
+
+const TopStocksChart = ({ stocks }) => {
   const [topStock, setTopStock] = useState([])
   const [secondStock, setSecondStock] = useState([])
-  const { stocks } = useStocks()
+
+  const generateDates = () => {
+    const now = new Date()
+    const dates = []
+    topStock.forEach((v, i) => {
+      dates.push(new Date(now - 2000 - i * 2000))
+    })
+    return dates
+  }
+
+  const [slicedLabels, setSlicedLabels] = useState(
+    generateDates().slice(0, 50).reverse()
+  )
 
   useEffect(() => {
-    socket.on('stock data', async () => {
-      let _topStock = topStock
-      _topStock.push(stocks[0].price)
+    let _topStock = topStock
+    let _secondStock = secondStock
+
+    if (stocks[0]?.price) {
+      _topStock.push(stocks[0]?.price)
       setTopStock(_topStock)
-      let _secondStock = secondStock
-      _secondStock.push(stocks[1].price)
+    }
+    if (stocks[1]?.price) {
+      _secondStock.push(stocks[1]?.price)
       setSecondStock(_secondStock)
-    })
+    }
+    setSlicedLabels((slicedLabels) => [...slicedLabels, new Date()])
+
+    if (topStock.length > 50) {
+      _topStock.shift()
+    }
+    if (secondStock.length > 50) {
+      _secondStock.shift()
+    }
+    if (slicedLabels.length > 50) {
+      setSlicedLabels(([x, ...slicedLabels]) => [...slicedLabels])
+    }
   }, [stocks])
 
   const chartData = {
-    labels: [
-      '12-01-2020',
-      '01-01-2021',
-      '02-01-2021',
-      '03-01-2021',
-      '04-01-2021',
-      '05-01-2021',
-      '06-01-2021',
-      '07-01-2021',
-      '08-01-2021',
-      '09-01-2021',
-      '10-01-2021',
-      '11-01-2021',
-      '12-01-2021',
-      '01-01-2022',
-      '02-01-2022',
-      '03-01-2022',
-      '04-01-2022',
-      '05-01-2022',
-      '06-01-2022',
-      '07-01-2022',
-      '08-01-2022',
-      '09-01-2022',
-      '10-01-2022',
-      '11-01-2022',
-      '12-01-2022',
-      '01-01-2023',
-    ],
+    labels: slicedLabels,
     datasets: [
       // Blue line
       {
-        label: 'Previous',
         data: topStock,
         borderColor: tailwindConfig().theme.colors.blue[400],
         fill: false,
@@ -66,7 +60,6 @@ const TopStocksChart = () => {
       },
       // Green line
       {
-        label: 'Average',
         data: secondStock,
         borderColor: tailwindConfig().theme.colors.green[500],
         fill: false,

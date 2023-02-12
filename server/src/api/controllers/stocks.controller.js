@@ -38,10 +38,9 @@ export const addStock = async (req, res) => {
 }
 
 export const deleteStock = async (req, res) => {
+  let stock
   try {
-    console.log({ req: req.params.id })
-    stock = await Stock.findOne({ _id: req.params.id })
-    console.log('whutttt', { stock })
+    stock = await Stock.findById(req.params.id)
     if (!stock) {
       return res.status(404).json({ message: 'Cannot find stock' })
     }
